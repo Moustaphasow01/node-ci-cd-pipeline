@@ -1,0 +1,69 @@
+name: Node.js CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run build
+        run: echo "Build step complete"
+
+  measure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Prometheus
+        run: |
+          docker run -d -p 9090:9090 prom/prometheus
+
+  document:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate API Docs (Swagger)
+        run: |
+          npm install swagger-jsdoc swagger-ui-express
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install testing dependencies
+        run: npm install jest supertest
+
+      - name: Run tests
+        run: npm test
+
+  secure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Security scan with Snyk
+        run: |
+          npm install -g snyk
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test
+
+  deploy:
+    needs: [build, test, secure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy with Docker
+        run: |
+          docker build -t my-app .
+          docker run -d -p 3000:3000 my-app
+
