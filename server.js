@@ -1,12 +1,18 @@
-const express = require("express");
-const app = express();
-const port = 3000;
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
-app.get("/", (req, res) => {
-    res.json({ message: "Hello, world!" });
-});
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Node.js API",
+      version: "1.0.0",
+      description: "A simple Express API",
+    },
+  },
+  apis: ["server.js"],
+};
 
-app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-});
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
