@@ -11,12 +11,12 @@ const swaggerOptions = {
       title: "API Documentation",
       description: "API Information",
       contact: {
-        name: "Developer"
+        name: "Developer",
       },
-      servers: ["http://localhost:3000"]
-    }
+      servers: ["http://localhost:3000"],
+    },
   },
-  apis: ["server.js"]
+  apis: ["server.js"],
 };
 
 const swaggerSpec = swaggerJsDoc(swaggerOptions);
