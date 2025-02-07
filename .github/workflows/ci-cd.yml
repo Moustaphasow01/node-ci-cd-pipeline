@@ -20,8 +20,16 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: npm install
+      - name: Clean install dependencies
+        run: |
+          rm -rf node_modules package-lock.json
+          npm install
+
+      - name: Update Jest and dependencies
+        run: npm update
+
+      - name: Create Jest config to ignore node_modules
+        run: echo 'module.exports = { transformIgnorePatterns: ["/node_modules/"] };' > jest.config.js
 
   measure:
     runs-on: ubuntu-latest
@@ -49,6 +57,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Run Tests
         run: npm test
